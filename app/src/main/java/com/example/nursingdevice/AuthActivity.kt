@@ -118,7 +118,7 @@ class AuthActivity : AppCompatActivity() {
 
         setLoading(true)
         lifecycleScope.launch {
-            repo.login(nurseId).fold(
+            repo.login(nurseId, pin).fold(
                 onSuccess = { reg ->
                     val data = reg.nurse
                     manager.saveNurseData(data)
@@ -177,7 +177,7 @@ class AuthActivity : AppCompatActivity() {
 
         setLoading(true)
         lifecycleScope.launch {
-            repo.register(nurseId, name, age, gender, poc, contact).fold(
+            repo.register(nurseId, name, age, gender, poc, contact, pin).fold(
                 onSuccess = { reg ->
                     manager.saveNurseData(reg.nurse)
                     // Persist the server-issued credentials, encrypted under this PIN.

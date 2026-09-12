@@ -20,7 +20,13 @@ data class NurseRequest(
     @SerializedName("age") val age: Int?,
     @SerializedName("gender") val gender: String?,
     @SerializedName("pointOfCare") val pointOfCare: String,
-    @SerializedName("contactNo") val contactNo: String?
+    @SerializedName("contactNo") val contactNo: String?,
+    @SerializedName("pin") val pin: String? = null
+)
+
+data class NurseLoginRequest(
+    @SerializedName("nurseId") val nurseId: String,
+    @SerializedName("pin") val pin: String
 )
 
 data class NurseApiResponse(
@@ -50,6 +56,9 @@ interface NurseApiService {
     @POST("api/nurses/register")
     suspend fun registerNurse(@Body request: NurseRequest): NurseApiResponse
 
+    @POST("api/nurses/login")
+    suspend fun loginNurse(@Body request: NurseLoginRequest): NurseApiResponse
+
     @GET("api/nurses/{nurseId}")
     suspend fun getNurse(@Path("nurseId") nurseId: String): NurseApiResponse
 }
@@ -78,10 +87,11 @@ class NurseRepository {
 
     suspend fun register(
         nurseId: String, name: String, age: Int?,
-        gender: String?, pointOfCare: String, contactNo: String?
+        gender: String?, pointOfCare: String, contactNo: String?,
+        pin: String? = null
     ): Result<NurseRegistration> = withContext(Dispatchers.IO) {
         try {
-            val resp = api.registerNurse(NurseRequest(nurseId, name, age, gender, pointOfCare, contactNo))
+            val resp = api.registerNurse(NurseRequest(nurseId, name, age, gender, pointOfCare, contactNo, pin))
             if (resp.success && resp.nurse != null) {
                 Result.success(NurseRegistration(resp.nurse, resp.credentials))
             } else {
@@ -89,18 +99,42 @@ class NurseRepository {
             }
         } catch (e: Exception) {
             Log.e("NurseRepository", "register", e)
-            Result.failure(e)
+            val msg = if (e is retrofit2.HttpException) {
+                parseErrorMessage(e) ?: "HTTP ${e.code()}"
+            } else e.message ?: "Registration failed"
+            Result.failure(Exception(msg))
         }
     }
 
-    suspend fun login(nurseId: String): Result<NurseRegistration> = withContext(Dispatchers.IO) {
+    suspend fun login(nurseId: String, pin: String): Result<NurseRegistration> = withContext(Dispatchers.IO) {
         try {
-            val resp = api.getNurse(nurseId)
-            if (resp.success && resp.nurse != null) Result.success(NurseRegistration(resp.nurse, resp.credentials))
-            else Result.failure(Exception("Nurse ID not found. Please register first."))
+            val resp = api.loginNurse(NurseLoginRequest(nurseId, pin))
+            if (resp.success && resp.nurse != null) {
+                Result.success(NurseRegistration(resp.nurse, resp.credentials))
+            } else {
+                Result.failure(Exception(resp.message ?: "Nurse login failed"))
+            }
         } catch (e: Exception) {
             Log.e("NurseRepository", "login", e)
-            Result.failure(e)
+            val msg = if (e is retrofit2.HttpException) {
+                parseErrorMessage(e) ?: if (e.code() == 401) "Invalid PIN. Please check your PIN and try again." else "HTTP ${e.code()}"
+            } else {
+                e.message ?: "Nurse login failed"
+            }
+            Result.failure(Exception(msg))
+        }
+    }
+
+    private fun parseErrorMessage(e: retrofit2.HttpException): String? {
+        return try {
+            val body = e.response()?.errorBody()?.string().orEmpty()
+            if (body.isBlank()) return null
+            val root = com.google.gson.JsonParser().parse(body)
+            if (root.isJsonObject && root.asJsonObject.has("message")) {
+                root.asJsonObject.get("message").asString
+            } else null
+        } catch (_: Exception) {
+            null
         }
     }
 }
