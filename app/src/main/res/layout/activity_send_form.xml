@@ -291,6 +291,33 @@
                         app:tint="@color/colorPrimary"
                         android:padding="12dp" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+                    <EditText
+                        android:id="@+id/oxygenLevelInput"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="50dp"
+                        android:hint="Oxygen Level (% SpO2)"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/colorTextSecondary"
+                        android:textColor="@color/colorTextPrimary"
+                        android:background="@color/colorInputBackground"
+                        android:paddingHorizontal="16dp" />
+                    <ImageButton
+                        android:id="@+id/voiceOxygenLevelBtn"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@android:drawable/ic_btn_speak_now"
+                        android:background="@color/colorInputBackground"
+                        app:tint="@color/colorPrimary"
+                        android:padding="12dp" />
+                </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -119,6 +119,8 @@ object CryptoUtils {
     const val AUTH_CHUNK_MORE: Byte = 0x00 // more chunks follow
     const val AUTH_CHUNK_LAST: Byte = 0x01 // final chunk — process the payload
     const val AUTH_CHUNK_SIZE = 240
+    // AES-GCM adds a 12-byte nonce and 16-byte authentication tag. Keep the
+    // encrypted response within the short APDU response budget.
 
     /** This device's private key from the unlocked credential, or null if locked. */
     fun getSessionPrivateKey(): PrivateKey? {

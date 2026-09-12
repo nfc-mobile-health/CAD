@@ -17,6 +17,7 @@ data class Patient(
     val sugar: String = "",
     val height: String = "",
     val weight: String = "",
+    val oxygenLevel: String = "",
     val patientId: String
 )
 
@@ -83,6 +84,7 @@ class NursePatientManager(private val context: Context) {
             sugar = SessionCache.currentPatientSugar,
             height = SessionCache.currentPatientHeight,
             weight = SessionCache.currentPatientWeight,
+            oxygenLevel = SessionCache.currentPatientOxygenLevel,
             patientId = id
         )
     }

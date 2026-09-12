@@ -88,6 +88,7 @@ Blood Pressure: 120/80
 Heart Rate: 72 bpm
 Respiratory Rate: 16 breaths/min
 Body Temperature: 98.6F
+Oxygen Level: 98%
 Medication: Paracetamol 500mg
 Description: Patient is stable
 

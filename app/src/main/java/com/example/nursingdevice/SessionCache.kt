@@ -14,6 +14,7 @@ object SessionCache {
     var currentPatientSugar: String = ""
     var currentPatientHeight: String = ""
     var currentPatientWeight: String = ""
+    var currentPatientOxygenLevel: String = ""
     var currentPatientId: String = ""
 
     // Stores all the reports generated during this app session
@@ -33,6 +34,7 @@ object SessionCache {
             currentPatientSugar = jsonObject.optString("sugar", "")
             currentPatientHeight = jsonObject.optString("height", "")
             currentPatientWeight = jsonObject.optString("weight", "")
+            currentPatientOxygenLevel = jsonObject.optString("oxygenLevel", "")
             currentPatientId = jsonObject.optString("patientId", "N/A")
 
             Log.d("SessionCache", "Successfully parsed JSON for patient: $currentPatientName")
@@ -69,6 +71,7 @@ object SessionCache {
             currentPatientSugar = ""
             currentPatientHeight = ""
             currentPatientWeight = ""
+            currentPatientOxygenLevel = ""
             currentPatientId = ""
             return
         }
@@ -80,6 +83,7 @@ object SessionCache {
         currentPatientSugar = patient.sugar
         currentPatientHeight = patient.height
         currentPatientWeight = patient.weight
+        currentPatientOxygenLevel = patient.oxygenLevel
         currentPatientId = patient.patientId
     }
 
@@ -96,6 +100,7 @@ object SessionCache {
         currentPatientSugar = ""
         currentPatientHeight = ""
         currentPatientWeight = ""
+        currentPatientOxygenLevel = ""
         currentPatientId = ""
         sessionHistory.clear()
     }

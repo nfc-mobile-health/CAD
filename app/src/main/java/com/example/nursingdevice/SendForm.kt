@@ -28,6 +28,7 @@ class SendForm : AppCompatActivity(), RecognitionListener {
     private lateinit var heartRateInput: EditText
     private lateinit var respiratoryRateInput: EditText
     private lateinit var temperatureInput: EditText
+    private lateinit var oxygenLevelInput: EditText
     private lateinit var generateButton: Button
     private lateinit var startVoiceBtn: Button
 
@@ -37,6 +38,7 @@ class SendForm : AppCompatActivity(), RecognitionListener {
     private lateinit var voiceHeartRateBtn: ImageButton
     private lateinit var voiceRespRateBtn: ImageButton
     private lateinit var voiceTempBtn: ImageButton
+    private lateinit var voiceOxygenLevelBtn: ImageButton
 
     private lateinit var formContainer: LinearLayout
     private lateinit var previewContainer: LinearLayout
@@ -86,6 +88,7 @@ class SendForm : AppCompatActivity(), RecognitionListener {
         heartRateInput = findViewById(R.id.heartRateInput)
         respiratoryRateInput = findViewById(R.id.respiratoryRateInput)
         temperatureInput = findViewById(R.id.temperatureInput)
+        oxygenLevelInput = findViewById(R.id.oxygenLevelInput)
         generateButton = findViewById(R.id.generateButton)
         startVoiceBtn = findViewById(R.id.startVoiceBtn)
 
@@ -95,6 +98,7 @@ class SendForm : AppCompatActivity(), RecognitionListener {
         voiceHeartRateBtn = findViewById(R.id.voiceHeartRateBtn)
         voiceRespRateBtn = findViewById(R.id.voiceRespRateBtn)
         voiceTempBtn = findViewById(R.id.voiceTempBtn)
+        voiceOxygenLevelBtn = findViewById(R.id.voiceOxygenLevelBtn)
 
         formContainer = findViewById(R.id.formContainer)
         previewContainer = findViewById(R.id.previewContainer)
@@ -129,6 +133,7 @@ class SendForm : AppCompatActivity(), RecognitionListener {
         voiceEnabledFields.add(heartRateInput)
         voiceEnabledFields.add(respiratoryRateInput)
         voiceEnabledFields.add(temperatureInput)
+        voiceEnabledFields.add(oxygenLevelInput)
         voiceEnabledFields.add(descriptionInput)
         voiceEnabledFields.add(medicationInput)
 
@@ -187,18 +192,19 @@ class SendForm : AppCompatActivity(), RecognitionListener {
             2 -> "Heart Rate"
             3 -> "Respiratory Rate"
             4 -> "Temperature"
-            5 -> "Description"
-            6 -> "Medication"
+            5 -> "Oxygen Level"
+            6 -> "Description"
+            7 -> "Medication"
             else -> "Field"
         }
     }
 
     private fun isContinuousField(index: Int): Boolean =
-        index == 5 || index == 6
+        index == 6 || index == 7
 
     private fun voiceFieldForIndex(index: Int): VoiceField? = when (index) {
-        5 -> VoiceField.DESCRIPTION
-        6 -> VoiceField.MEDICATION
+        6 -> VoiceField.DESCRIPTION
+        7 -> VoiceField.MEDICATION
         else -> null
     }
 
@@ -256,11 +262,12 @@ class SendForm : AppCompatActivity(), RecognitionListener {
         voiceHeartRateBtn.setOnClickListener { startVoiceInputAtIndex(2) }
         voiceRespRateBtn.setOnClickListener { startVoiceInputAtIndex(3) }
         voiceTempBtn.setOnClickListener { startVoiceInputAtIndex(4) }
+        voiceOxygenLevelBtn.setOnClickListener { startVoiceInputAtIndex(5) }
         voiceDescriptionBtn.setOnClickListener {
             if (activeVoiceField == VoiceField.DESCRIPTION) {
                 stopContinuousVoiceInput(VoiceField.DESCRIPTION)
             } else {
-                startVoiceInputAtIndex(5)
+                startVoiceInputAtIndex(6)
             }
         }
 
@@ -268,7 +275,7 @@ class SendForm : AppCompatActivity(), RecognitionListener {
             if (activeVoiceField == VoiceField.MEDICATION) {
                 stopContinuousVoiceInput(VoiceField.MEDICATION)
             } else {
-                startVoiceInputAtIndex(6)
+                startVoiceInputAtIndex(7)
             }
         }
     }
@@ -328,8 +335,8 @@ class SendForm : AppCompatActivity(), RecognitionListener {
             ) {
                 startVoiceInputAtIndex(
                     when (field) {
-                        VoiceField.DESCRIPTION -> 5
-                        VoiceField.MEDICATION -> 6
+                        VoiceField.DESCRIPTION -> 6
+                        VoiceField.MEDICATION -> 7
                     }
                 )
             }
@@ -441,6 +448,7 @@ class SendForm : AppCompatActivity(), RecognitionListener {
         val heartRate = heartRateInput.text.toString().trim()
         val respiratoryRate = respiratoryRateInput.text.toString().trim()
         val temperature = temperatureInput.text.toString().trim()
+        val oxygenLevel = oxygenLevelInput.text.toString().trim()
         val medication = medicationInput.text.toString().trim()
         val description = descriptionInput.text.toString().trim()
 
@@ -452,6 +460,10 @@ class SendForm : AppCompatActivity(), RecognitionListener {
         if (heartRate.isNotEmpty()) content.append("Heart Rate: $heartRate bpm\n")
         if (respiratoryRate.isNotEmpty()) content.append("Respiratory Rate: $respiratoryRate breaths/min\n")
         if (temperature.isNotEmpty()) content.append("Body Temperature: ${temperature}F\n")
+        if (oxygenLevel.isNotEmpty()) {
+            val formattedO2 = if (oxygenLevel.endsWith("%")) oxygenLevel else "$oxygenLevel%"
+            content.append("Oxygen Level: $formattedO2\n")
+        }
         if (medication.isNotEmpty()) content.append("Medication: $medication\n")
         if (description.isNotEmpty()) content.append("Description: $description\n")
         content.append("\n==================\n")
