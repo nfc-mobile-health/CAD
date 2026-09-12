@@ -1,38 +1,54 @@
-*.iml
-.gradle
-/local.properties
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# ===== Gradle / build outputs =====
+.gradle/
+build/
+**/build/
+out/
+
+# ===== Local machine config — SDK path, and sometimes API keys =====
 local.properties
+
+# ===== Android Studio / IntelliJ =====
 .idea/
-
-# Log/OS Files
-*.log
-
-# Android Studio generated files and folders
+*.iml
 captures/
 .externalNativeBuild/
 .cxx/
-*.aab
+*.hprof
+
+# ===== Kotlin =====
+.kotlin/
+
+# ===== Built artifacts — never commit binaries =====
 *.apk
-output-metadata.json
+*.aab
+*.ap_
+*.dex
 
-# IntelliJ
-*.iml
-.idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
-
-# Keystore files
+# ===== Signing — never commit keystores or passwords =====
 *.jks
 *.keystore
+keystore.properties
+signing.properties
 
-# Google Services (e.g. APIs or Firebase)
-google-services.json
+# ===== Project-specific security =====
+*.pem
+*.key
+*.p12
+secrets.properties
+.env
+.env.local
 
-# Android Profiling
-*.hprof
+# ===== Lint =====
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# ===== OS junk =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== Editor junk =====
+*.swp
+*~
