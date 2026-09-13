@@ -52,7 +52,11 @@ fun LoginScreen(viewModel: AuthViewModel, onLoginSuccess: () -> Unit) {
         }
         
         if (showRegister) {
-            Text("Registration form stub")
+            OutlinedTextField(value = viewModel.registerId.collectAsState().value, onValueChange = { viewModel.registerId.value = it }, label = { Text(stringResource(R.string.login_id_hint)) }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = viewModel.registerName.collectAsState().value, onValueChange = { viewModel.registerName.value = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+            Button(onClick = { viewModel.register(pin) }, modifier = Modifier.fillMaxWidth().height(56.dp)) {
+                Text("Register")
+            }
         }
     }
 }

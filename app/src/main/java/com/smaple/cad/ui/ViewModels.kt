@@ -12,6 +12,7 @@ import com.smaple.core.session.CredentialStore
 import com.smaple.core.session.LoginResult
 import com.smaple.core.session.SessionCoordinator
 import com.smaple.core.session.SessionEvent
+import com.smaple.cad.sync.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val credentialStore: CredentialStore
+    private val credentialStore: CredentialStore,
+    private val backendApi: BackendApi,
+    private val syncManager: SyncManager
 ) : ViewModel() {
 
     private val _isLoggedIn = MutableStateFlow(credentialStore.isLoggedIn)
@@ -30,12 +33,16 @@ class AuthViewModel @Inject constructor(
     private val _loginError = MutableStateFlow<String?>(null)
     val loginError = _loginError.asStateFlow()
 
+    val registerId = MutableStateFlow("")
+    val registerName = MutableStateFlow("")
+
     fun login(userId: String, pin: String) {
         viewModelScope.launch {
             when (val result = credentialStore.login(userId, pin)) {
                 is LoginResult.Success -> {
                     _loginError.value = null
                     _isLoggedIn.value = true
+                    syncManager.startSync()
                 }
                 is LoginResult.Error -> _loginError.value = result.message
                 is LoginResult.InvalidCredentials -> _loginError.value = "Invalid PIN"
@@ -44,7 +51,20 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+
+    fun register(pin: String) {
+        viewModelScope.launch {
+            val res = backendApi.registerHp(registerId.value, registerName.value, "General", null, null, null)
+            if (res.success) {
+                login(registerId.value, pin)
+            } else {
+                _loginError.value = res.message
+            }
+        }
+    }
+
     fun logout() {
+        syncManager.stopSync()
         credentialStore.logout()
         _isLoggedIn.value = false
     }
@@ -53,7 +73,8 @@ class AuthViewModel @Inject constructor(
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val sessionCoordinator: SessionCoordinator,
-    private val backendApi: BackendApi
+    private val backendApi: BackendApi,
+    private val credentialStore: CredentialStore
 ) : ViewModel() {
 
     val sessionState = sessionCoordinator.sessionState
