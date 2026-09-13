@@ -9,6 +9,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import com.smaple.core.fakes.FakeCredentialStore
+import com.smaple.core.fakes.FakeBackendApi
+import com.smaple.cad.sync.SyncManager
+import androidx.test.core.app.ApplicationProvider
 
 @RunWith(RobolectricTestRunner::class)
 @Config(instrumentedPackages = ["androidx.loader.content"])
@@ -19,7 +22,7 @@ class CadComposeUiTest {
 
     @Test
     fun testLoginScreen_Renders() {
-        val authViewModel = AuthViewModel(FakeCredentialStore())
+        val authViewModel = AuthViewModel(FakeCredentialStore(), FakeBackendApi(), SyncManager(ApplicationProvider.getApplicationContext()))
         composeTestRule.setContent {
             LoginScreen(viewModel = authViewModel, onLoginSuccess = {})
         }

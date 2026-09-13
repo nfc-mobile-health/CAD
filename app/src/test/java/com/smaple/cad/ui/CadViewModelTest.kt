@@ -15,8 +15,13 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import androidx.test.core.app.ApplicationProvider
+import com.smaple.cad.sync.SyncManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class CadViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
@@ -32,8 +37,8 @@ class CadViewModelTest {
         backendApi = FakeBackendApi()
         credentialStore = FakeCredentialStore()
         sessionCoordinator = FakeSessionCoordinator()
-        mainViewModel = MainViewModel(sessionCoordinator, backendApi)
-        authViewModel = AuthViewModel(credentialStore)
+        mainViewModel = MainViewModel(sessionCoordinator, backendApi, credentialStore)
+        authViewModel = AuthViewModel(credentialStore, backendApi, SyncManager(ApplicationProvider.getApplicationContext()))
     }
 
     @After
