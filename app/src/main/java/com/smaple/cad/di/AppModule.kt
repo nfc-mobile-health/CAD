@@ -1,3 +1,7 @@
+/**
+ * Dagger Hilt dependency injection module for CAD.
+ * Binds real implementations of shared-core interfaces.
+ */
 package com.smaple.cad.di
 
 import android.content.Context

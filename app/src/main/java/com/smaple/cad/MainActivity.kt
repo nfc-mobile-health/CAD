@@ -1,3 +1,6 @@
+/**
+ * Entry point for the CAD application, setting up Compose content and NFC Reader Mode.
+ */
 package com.smaple.cad
 
 import android.nfc.NfcAdapter

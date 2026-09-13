@@ -1,3 +1,7 @@
+/**
+ * Android IsoDep implementation of the Transport interface for CAD.
+ * Executes raw APDU transceive operations against a tapped mCard.
+ */
 package com.smaple.cad.nfc
 
 import android.nfc.tech.IsoDep
