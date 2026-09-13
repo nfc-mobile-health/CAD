@@ -1,5 +1,5 @@
 /**
- * UI Screens for CAD.
+ * Jetpack Compose UI screen definitions mapping state to visual components.
  */
 package com.smaple.cad.ui
 

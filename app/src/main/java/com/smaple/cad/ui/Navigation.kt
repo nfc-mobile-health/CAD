@@ -1,5 +1,5 @@
 /**
- * Compose Navigation graph for CAD.
+ * Defines the Compose navigation graph, routing between screens based on authentication and session states.
  */
 package com.smaple.cad.ui
 

@@ -1,5 +1,5 @@
 /**
- * ViewModels for CAD App.
+ * State holders bridging the UI layer with Track A fakes and protocol logic. Enforces regression invariants like distinct peer taps and full-record replacement.
  */
 package com.smaple.cad.ui
 
@@ -141,6 +141,13 @@ class MainViewModel @Inject constructor(
 
     fun clearPatient() {
         _currentPatient.value = null
+        // Regression 3 fix: hard-wipe form state
+        bp.value = ""
+        hr.value = ""
+        rr.value = ""
+        temp.value = ""
+        med.value = ""
+        desc.value = ""
     }
 
     fun clearSessionRecords() {
