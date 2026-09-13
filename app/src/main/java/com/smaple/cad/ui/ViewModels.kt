@@ -104,9 +104,6 @@ class MainViewModel @Inject constructor(
 
     fun startScan() {
         sessionCoordinator.reset()
-        viewModelScope.launch {
-            sessionCoordinator.startReaderSession()
-        }
     }
 
     fun onProfileReceived(profile: PatientProfile) {
@@ -132,9 +129,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun startSendSession() {
-        viewModelScope.launch {
-            sessionCoordinator.startReaderSession()
-        }
+        // Actual start is triggered by MainActivity onTagDiscovered
     }
     
     fun onRecordSent(record: MedicalRecord) {
