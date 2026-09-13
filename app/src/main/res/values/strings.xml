@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CAD Demo</string>
+    <string name="login_title">Healthcare Professional Login</string>
+    <string name="login_id_hint">ID</string>
+    <string name="login_pin_hint">6-Digit PIN</string>
+    <string name="login_button">Login</string>
+    <string name="register_toggle">Need to register? Tap here.</string>
+    <string name="home_scan_patient">Scan Patient</string>
+    <string name="home_fill_vitals">Fill Vitals for %1$s</string>
+    <string name="home_logout">Logout</string>
+    <string name="scan_title">Scan Patient</string>
+    <string name="scan_instructions">Hold the CAD device near the patient\'s mCard to scan.</string>
+    <string name="vitals_title">Vitals Form</string>
+    <string name="vitals_blood_pressure">Blood Pressure</string>
+    <string name="vitals_heart_rate">Heart Rate</string>
+    <string name="vitals_respiratory_rate">Respiratory Rate</string>
+    <string name="vitals_temperature">Body Temperature</string>
+    <string name="vitals_medication">Medication</string>
+    <string name="vitals_description">Description</string>
+    <string name="vitals_review_button">Review</string>
+    <string name="review_title">Review Record</string>
+    <string name="review_send_button">Send to mCard</string>
+    <string name="history_title">Sent Records History</string>
+    <string name="session_status">Status: %1$s</string>
+    <string name="session_verifying">Verifying identity...</string>
+    <string name="session_sending">Sending securely...</string>
+    <string name="session_receiving">Receiving securely...</string>
+    <string name="session_done">Done</string>
+    <string name="session_error">Secure connection failed</string>
+    <string name="session_peer_mismatch">This isn\'t the patient you scanned — re-scan to continue</string>
+</resources>
