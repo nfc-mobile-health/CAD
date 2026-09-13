@@ -1,3 +1,6 @@
+/**
+ * WorkManager worker for uploading pending medical records.
+ */
 package com.smaple.cad.sync
 
 import android.content.Context
@@ -22,10 +25,12 @@ class SyncWorker(
         fun backendApi(): BackendApi
     }
 
+    var testCredentialStore: CredentialStore? = null
+    var testBackendApi: BackendApi? = null
+
     override suspend fun doWork(): Result {
-        val entryPoint = EntryPointAccessors.fromApplication(applicationContext, SyncWorkerEntryPoint::class.java)
-        val credentialStore = entryPoint.credentialStore()
-        val backendApi = entryPoint.backendApi()
+        val credentialStore = testCredentialStore ?: EntryPointAccessors.fromApplication(applicationContext, SyncWorkerEntryPoint::class.java).credentialStore()
+        val backendApi = testBackendApi ?: EntryPointAccessors.fromApplication(applicationContext, SyncWorkerEntryPoint::class.java).backendApi()
 
         if (!credentialStore.isLoggedIn) {
             return Result.success() // Do not sync while logged out

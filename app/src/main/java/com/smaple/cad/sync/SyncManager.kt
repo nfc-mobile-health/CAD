@@ -1,3 +1,6 @@
+/**
+ * Manages periodic sync scheduling tied to login sessions.
+ */
 package com.smaple.cad.sync
 
 import android.content.Context
