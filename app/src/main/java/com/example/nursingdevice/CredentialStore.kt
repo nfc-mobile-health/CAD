@@ -46,11 +46,21 @@ sealed class SaveResult {
  */
 object CredentialStore {
 
+    fun hasDatabase(context: Context): Boolean =
+        context.getDatabasePath(NursingDeviceDatabase.DB_NAME).exists()
+
     /**
      * Unlock with a PIN and load the stored credential into memory.
      * Returns a specific [UnlockResult] so the UI can show the exact problem.
+     *
+     * If the database does not exist on disk yet, returns [UnlockResult.NoCredential]
+     * without opening Room, preventing premature database file creation with an
+     * unverified candidate PIN.
      */
     fun unlock(context: Context, pin: String, nurseId: String): UnlockResult {
+        if (!hasDatabase(context)) {
+            return UnlockResult.NoCredential
+        }
         return try {
             val db = open(context, pin, nurseId)
             val cred = db.credentialDao().getCredential()   // first query — fails here if PIN is wrong

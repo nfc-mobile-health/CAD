@@ -92,30 +92,21 @@ class AuthActivity : AppCompatActivity() {
             return
         }
 
-        // Unlock the encrypted credential store with the PIN. This both verifies
-        // the PIN and loads the nurse's credentials into memory for NFC use.
-        val unlock = CredentialStore.unlock(this, pin, nurseId)
+        // Check if database exists on device before attempting local unlock.
+        // If it doesn't exist, avoid opening Room to prevent creating a database file with an unverified PIN.
+        val hasDb = CredentialStore.hasDatabase(this)
+        val unlock = if (hasDb) CredentialStore.unlock(this, pin, nurseId) else UnlockResult.NoCredential
 
-        // A wrong PIN is fatal for login regardless of the network path — stop here
-        // with the exact reason so the nurse knows what happened.
-        if (unlock is UnlockResult.Failed) {
-            Toast.makeText(this, "Login failed: ${unlock.reason}", Toast.LENGTH_LONG).show()
-            return
-        }
-        val noCreds = unlock is UnlockResult.NoCredential
-
-        // Local fast-path: same nurse, credentials already on this device.
+        // Local fast-path: same nurse, valid credentials already on this device unlocked with PIN.
         val cached = manager.getNurse()
-        if (cached.id == nurseId && cached.id.isNotEmpty()) {
-            if (noCreds) {
-                Toast.makeText(this, "PIN OK, but no credentials on this device yet. Register or 'rotate' to provision them.", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(this, "Welcome back, ${cached.name}!", Toast.LENGTH_SHORT).show()
-            }
+        if (cached.id == nurseId && cached.id.isNotEmpty() && unlock is UnlockResult.Success) {
+            Toast.makeText(this, "Welcome back, ${cached.name}!", Toast.LENGTH_SHORT).show()
             goToMain()
             return
         }
 
+        // If not fast-path (e.g. store has no credentials, or key mismatch from earlier/stale DB,
+        // or a different nurse logging in), authenticate against backend.
         setLoading(true)
         lifecycleScope.launch {
             repo.login(nurseId, pin).fold(
@@ -123,34 +114,30 @@ class AuthActivity : AppCompatActivity() {
                     val data = reg.nurse
                     manager.saveNurseData(data)
                     val creds = reg.credentials
-                    when {
-                        // Store had no credential on this device (e.g. app data was
-                        // cleared) but the server returned it — re-provision, encrypting
-                        // it under the PIN just entered.
-                        noCreds && creds?.privateKey != null -> {
-                            val note = when (val r = CredentialStore.saveFromServer(
-                                this@AuthActivity, pin, nurseId, "nurse", creds
-                            )) {
-                                is SaveResult.Success -> "credentials restored"
-                                is SaveResult.Failed  -> "credential restore failed: ${r.reason}"
-                            }
-                            Toast.makeText(this@AuthActivity, "Welcome, ${data.name} ($note)", Toast.LENGTH_LONG).show()
+                    if (creds?.privateKey != null) {
+                        val note = when (val r = CredentialStore.saveFromServer(
+                            this@AuthActivity, pin, nurseId, "nurse", creds
+                        )) {
+                            is SaveResult.Success -> "credentials restored"
+                            is SaveResult.Failed  -> "credential restore failed: ${r.reason}"
                         }
-                        noCreds -> {
-                            Toast.makeText(
-                                this@AuthActivity,
-                                "Logged in, but no credentials available to restore. Rotate to provision them.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        else -> {
-                            Toast.makeText(this@AuthActivity, "Welcome, ${data.name}!", Toast.LENGTH_SHORT).show()
-                        }
+                        Toast.makeText(this@AuthActivity, "Welcome, ${data.name} ($note)", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this@AuthActivity, "Welcome, ${data.name}!", Toast.LENGTH_SHORT).show()
                     }
                     goToMain()
                 },
                 onFailure = { err ->
-                    Toast.makeText(this@AuthActivity, err.message ?: "Login failed", Toast.LENGTH_LONG).show()
+                    val msg = err.message.orEmpty()
+                    val isInvalidPin = msg.contains("PIN", ignoreCase = true) || msg.contains("401")
+                    if (isInvalidPin) {
+                        Toast.makeText(this@AuthActivity, err.message ?: "Invalid PIN. Please check your PIN and try again.", Toast.LENGTH_LONG).show()
+                    } else if (unlock is UnlockResult.Failed) {
+                        // Offline or network error and local DB failed to decrypt
+                        Toast.makeText(this@AuthActivity, "Login failed: ${unlock.reason}", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this@AuthActivity, err.message ?: "Login failed", Toast.LENGTH_LONG).show()
+                    }
                     setLoading(false)
                 }
             )
@@ -200,7 +187,19 @@ class AuthActivity : AppCompatActivity() {
                     goToMain()
                 },
                 onFailure = { err ->
-                    // Save locally even if backend is unreachable so the nurse can work offline
+                    val msg = err.message.orEmpty()
+                    val isClientRejection = msg.contains("already registered", ignoreCase = true) ||
+                            msg.contains("different PIN", ignoreCase = true) ||
+                            msg.contains("at least 4 digits", ignoreCase = true) ||
+                            msg.contains("required", ignoreCase = true) ||
+                            msg.contains("400") || msg.contains("409")
+                    if (isClientRejection) {
+                        Toast.makeText(this@AuthActivity, err.message ?: "Registration failed", Toast.LENGTH_LONG).show()
+                        setLoading(false)
+                        return@fold
+                    }
+
+                    // Save locally only if backend is unreachable (offline network error)
                     manager.saveNurse(Nurse(name = name, id = nurseId))
                     Toast.makeText(
                         this@AuthActivity,
