@@ -43,4 +43,52 @@
     <string name="nav_scan">स्कैन</string>
     <string name="nav_upload">अपलोड</string>
     <string name="nav_me">मेरे बारे में</string>
+
+    <!-- Phase 2: Vitals, Review, Save, Past Notes -->
+    <string name="step_scan">स्कैन</string>
+    <string name="step_vitals">वाइटल्स</string>
+    <string name="step_save">सेव</string>
+
+    <string name="vitals_title">वाइटल्स जोड़ें</string>
+    <string name="vitals_helper">जो मापा है उसे भरें। खाली फ़ील्ड छोड़ दिए जाएँगे।</string>
+    <string name="vitals_fill_at_least_one">कम से कम एक फ़ील्ड भरें।</string>
+    <string name="label_bp">रक्तचाप (BP)</string>
+    <string name="label_systolic">ऊपर (सिस्टोलिक)</string>
+    <string name="label_diastolic">नीचे (डायस्टोलिक)</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="label_heart_rate">हृदय गति (नाड़ी)</string>
+    <string name="unit_bpm">प्रति मिनट</string>
+    <string name="label_temperature">तापमान</string>
+    <string name="label_medicines">दी गई दवाइयाँ</string>
+    <string name="medicines_helper">दवाइयों को सेमीकोलन (;) से अलग करें</string>
+    <string name="label_notes">टिप्पणी / विवरण</string>
+    <string name="mic_description">%1$s के लिए बोलकर दर्ज करें</string>
+    <string name="voice_error">आवाज़ समझ नहीं आई। फिर कोशिश करें।</string>
+    <string name="btn_review_note">नोट की समीक्षा करें</string>
+
+    <string name="dialog_leave_title">इस नोट को बिना सेव किए छोड़ें?</string>
+    <string name="dialog_leave_confirm">छोड़ें</string>
+    <string name="dialog_stay">रुकें</string>
+
+    <string name="review_title">नोट की समीक्षा</string>
+    <string name="btn_edit">संपादित करें</string>
+    <string name="btn_save_to_card">मरीज़ के कार्ड पर सेव करें</string>
+
+    <string name="save_title">कार्ड पर सेव करें</string>
+    <string name="save_instruction">फ़ोन साथ रखें। इसमें कुछ सेकंड लगेंगे।</string>
+    <string name="save_problem_mismatch">नोट सेव नहीं हुआ। फ़ोन साथ रखें और फिर सेव दबाएँ।</string>
+    <string name="save_problem_failed">कार्ड पर लिखा नहीं जा सका। एक बार फिर कोशिश करें।</string>
+    <string name="btn_save_again">फिर सेव करें</string>
+
+    <string name="saved_title">%1$s के कार्ड पर सेव हो गया</string>
+    <string name="saved_subtitle_single">1 नोट अपलोड होने की प्रतीक्षा में है</string>
+    <string name="saved_subtitle_multiple">%1$d नोट अपलोड होने की प्रतीक्षा में हैं</string>
+    <string name="btn_scan_next">अगले मरीज़ को स्कैन करें</string>
+
+    <string name="past_notes_title">इस कार्ड के पुराने नोट</string>
+    <string name="past_notes_empty">इस कार्ड पर अभी कोई नोट नहीं है।</string>
+    <string name="past_notes_loading">कार्ड से नोट पढ़े जा रहे हैं…</string>
+    <string name="past_notes_tap_prompt">इतिहास पढ़ने के लिए फ़ोन को कार्ड के पास रखें।</string>
+    <string name="written_by">%1$s द्वारा दर्ज</string>
+    <string name="btn_back">वापस</string>
 </resources>

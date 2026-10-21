@@ -43,4 +43,52 @@
     <string name="nav_scan">Scan</string>
     <string name="nav_upload">Upload</string>
     <string name="nav_me">Me</string>
+
+    <!-- Phase 2: Vitals, Review, Save, Past Notes -->
+    <string name="step_scan">Scan</string>
+    <string name="step_vitals">Vitals</string>
+    <string name="step_save">Save</string>
+
+    <string name="vitals_title">Add vitals</string>
+    <string name="vitals_helper">Fill what you measured. Empty fields are left out.</string>
+    <string name="vitals_fill_at_least_one">Fill at least one field.</string>
+    <string name="label_bp">Blood pressure</string>
+    <string name="label_systolic">Top (systolic)</string>
+    <string name="label_diastolic">Bottom (diastolic)</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="label_heart_rate">Heart rate</string>
+    <string name="unit_bpm">per minute</string>
+    <string name="label_temperature">Temperature</string>
+    <string name="label_medicines">Medicine given</string>
+    <string name="medicines_helper">Separate multiple medicines with semicolons</string>
+    <string name="label_notes">Notes</string>
+    <string name="mic_description">Voice input for %1$s</string>
+    <string name="voice_error">Didn’t catch that. Try again.</string>
+    <string name="btn_review_note">Review note</string>
+
+    <string name="dialog_leave_title">Leave without saving this note?</string>
+    <string name="dialog_leave_confirm">Leave</string>
+    <string name="dialog_stay">Stay</string>
+
+    <string name="review_title">Review note</string>
+    <string name="btn_edit">Edit</string>
+    <string name="btn_save_to_card">Save to patient’s card</string>
+
+    <string name="save_title">Save to card</string>
+    <string name="save_instruction">Hold phones together. This takes a few seconds.</string>
+    <string name="save_problem_mismatch">The note was not saved. Hold the phones together and press Save again.</string>
+    <string name="save_problem_failed">Could not write to card. Try once more.</string>
+    <string name="btn_save_again">Save again</string>
+
+    <string name="saved_title">Saved to %1$s’s card</string>
+    <string name="saved_subtitle_single">1 note waiting to upload</string>
+    <string name="saved_subtitle_multiple">%1$d notes waiting to upload</string>
+    <string name="btn_scan_next">Scan next patient</string>
+
+    <string name="past_notes_title">Past notes on this card</string>
+    <string name="past_notes_empty">No notes on this card yet.</string>
+    <string name="past_notes_loading">Reading notes from card…</string>
+    <string name="past_notes_tap_prompt">Hold phone against the card to read history.</string>
+    <string name="written_by">Written by %1$s</string>
+    <string name="btn_back">Back</string>
 </resources>
