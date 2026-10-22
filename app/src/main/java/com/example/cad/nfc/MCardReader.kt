@@ -41,6 +41,7 @@ class MCardReader(private val transport: CardTransport) {
      * Reads all stored records from the card newest-first using GET_RECORDS paging.
      */
     suspend fun readAllRecords(): List<ByteArray> {
+        requireSuccess(transport.exchange(Apdu.SELECT))
         val allRecords = mutableListOf<ByteArray>()
         var start = 0
         while (true) {

@@ -216,13 +216,14 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
                 _formState.value = f.copy(error = "Invalid temperature")
                 return false
             }
-            val inCelsius = if (f.isFahrenheit) (t - 32.0) * 5.0 / 9.0 else t
-            if (inCelsius < 30.0 || inCelsius > 55.5) {
+            val rawCelsius = if (f.isFahrenheit) (t - 32.0) * 5.0 / 9.0 else t
+            val roundedCelsius = Math.round(rawCelsius * 10.0) / 10.0
+            if (roundedCelsius < 30.0 || roundedCelsius > 55.5) {
                 val unitStr = if (f.isFahrenheit) "86.0 to 131.9 °F" else "30.0 to 55.5 °C"
                 _formState.value = f.copy(error = "Temperature must be $unitStr")
                 return false
             }
-            Math.round(inCelsius * 10.0) / 10.0
+            roundedCelsius
         } else null
 
         val medsList = if (f.medicines.isNotBlank()) {
