@@ -293,7 +293,13 @@ private fun ScanScreen(state: ScanState, onCancel: () -> Unit, onRetry: () -> Un
         ScanState.Working -> ScanCopy(TokenState.Working, R.string.token_working, R.string.scan_working)
         is ScanState.Problem -> ScanCopy(
             TokenState.Problem, R.string.token_problem,
-            if (state.kind == ProblemKind.CARD_REMOVED) R.string.scan_lost else R.string.scan_not_supported,
+            when (state.kind) {
+                ProblemKind.CARD_REMOVED -> R.string.scan_lost
+                ProblemKind.AUTH_REFUSED -> R.string.auth_refused
+                ProblemKind.CARD_LOCKED -> R.string.card_locked
+                ProblemKind.TIMED_OUT -> R.string.scan_timed_out
+                ProblemKind.COULD_NOT_READ -> R.string.scan_not_supported
+            },
         )
     }
     Text(stringResource(R.string.scan_title), style = MaterialTheme.typography.headlineLarge)

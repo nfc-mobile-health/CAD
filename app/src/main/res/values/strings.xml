@@ -11,6 +11,8 @@
     <string name="scan_lost">Phones moved apart. Hold them together and try again.</string>
     <string name="scan_timed_out">That took too long. Hold the phones still and try again.</string>
     <string name="scan_not_supported">This card could not be read. Try once more.</string>
+    <string name="auth_refused">This card could not be checked. Try once more. If it keeps happening, the card may need setting up again.</string>
+    <string name="card_locked">The card is locked. Scan it again.</string>
     <string name="try_again">Try again</string>
     <string name="cancel">Cancel</string>
     <string name="patient_found">Card found and checked</string>

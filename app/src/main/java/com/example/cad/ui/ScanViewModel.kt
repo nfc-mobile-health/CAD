@@ -5,6 +5,8 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cad.crypto.AuthenticationException
+import com.example.cad.crypto.CardLockedException
 import com.example.cad.nfc.CardTransportException
 import com.example.cad.nfc.IsoDepCardTransport
 import com.example.cad.nfc.MCardReader
@@ -53,7 +55,13 @@ sealed interface ScanState {
     data class Problem(val kind: ProblemKind) : ScanState
 }
 
-enum class ProblemKind { CARD_REMOVED, COULD_NOT_READ }
+enum class ProblemKind {
+    CARD_REMOVED,
+    COULD_NOT_READ,
+    AUTH_REFUSED,
+    CARD_LOCKED,
+    TIMED_OUT
+}
 
 sealed interface SaveState {
     data object Waiting : SaveState
@@ -326,11 +334,17 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
             _scanState.value = ScanState.Working
             val transport = IsoDepCardTransport(isoDep)
             try {
-                val patient = MCardReader(transport).readPatient()
+                val reader = MCardReader(transport)
+                reader.authenticate()
+                val patient = reader.readPatient()
                 _seenToday.value = listOf(patient) + _seenToday.value.filterNot { it.patientId == patient.patientId }
                 _screen.value = CadScreen.PatientFound(patient)
             } catch (_: CardTransportException.CardRemoved) {
                 _scanState.value = ScanState.Problem(ProblemKind.CARD_REMOVED)
+            } catch (_: AuthenticationException) {
+                _scanState.value = ScanState.Problem(ProblemKind.AUTH_REFUSED)
+            } catch (_: CardLockedException) {
+                _scanState.value = ScanState.Problem(ProblemKind.CARD_LOCKED)
             } catch (_: Exception) {
                 _scanState.value = ScanState.Problem(ProblemKind.COULD_NOT_READ)
             } finally {
@@ -346,6 +360,7 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
             val transport = IsoDepCardTransport(isoDep)
             try {
                 val reader = MCardReader(transport)
+                reader.authenticate()
                 val verified = reader.writeAndVerify(screen.blob)
                 if (verified) {
                     recordStore.saveNote(screen.patient.patientId, screen.blob)
@@ -356,6 +371,10 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (_: CardTransportException.CardRemoved) {
                 _saveState.value = SaveState.Problem(com.example.cad.R.string.scan_lost)
+            } catch (_: AuthenticationException) {
+                _saveState.value = SaveState.Problem(com.example.cad.R.string.auth_refused)
+            } catch (_: CardLockedException) {
+                _saveState.value = SaveState.Problem(com.example.cad.R.string.card_locked)
             } catch (_: Exception) {
                 _saveState.value = SaveState.Problem(com.example.cad.R.string.save_problem_failed)
             } finally {
@@ -370,6 +389,7 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
             val transport = IsoDepCardTransport(isoDep)
             try {
                 val reader = MCardReader(transport)
+                reader.authenticate()
                 val blobs = reader.readAllRecords()
                 val decoded = blobs.mapNotNull {
                     runCatching { RecordCodec.decode(it) }.getOrNull()
@@ -377,7 +397,11 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
                 _screen.value = screen.copy(notes = decoded, isLoading = false)
             } catch (_: CardTransportException.CardRemoved) {
                 _screen.value = screen.copy(isLoading = false, errorMessage = "Phones moved apart")
-            } catch (e: Exception) {
+            } catch (_: AuthenticationException) {
+                _screen.value = screen.copy(isLoading = false, errorMessage = "Authentication refused")
+            } catch (_: CardLockedException) {
+                _screen.value = screen.copy(isLoading = false, errorMessage = "Card is locked")
+            } catch (_: Exception) {
                 _screen.value = screen.copy(isLoading = false, errorMessage = "Could not read card history")
             } finally {
                 transport.close()

@@ -6,6 +6,14 @@ object Apdu {
     val GET_INFO = byteArrayOf(0x80.toByte(), 0x00, 0x00, 0x00, 0x00)
     val GET_BASIC_INFO = byteArrayOf(0x80.toByte(), 0x02, 0x00, 0x00, 0x00)
 
+    const val INS_AUTH_SEND_CAD_CERT = 0x80
+    const val INS_AUTH_GET_CARD_CERT = 0x82
+    const val INS_AUTH_GET_N1 = 0x83
+    const val INS_AUTH_SEND_MUTUAL_NONCE = 0x84
+    const val INS_AUTH_GET_NONCE_ACK = 0x86
+    const val INS_AUTH_ESTABLISH_HTK = 0x88
+    const val INS_SECURE_APDU = 0x90
+
     const val SW_SUCCESS = 0x9000
     const val SW_WRONG_LENGTH = 0x6700
     const val SW_NO_SECURE_SESSION = 0x6982
@@ -15,6 +23,74 @@ object Apdu {
     const val SW_NOT_FOUND = 0x6A88
     const val SW_INS_NOT_SUPPORTED = 0x6D00
     const val SW_CLA_NOT_SUPPORTED = 0x6E00
+
+    fun authSendCadCert(chunkIdx: Int, moreFlag: Boolean, chunk: ByteArray): ByteArray {
+        require(chunk.size in 1..180) { "Chunk size must be 1 to 180, was ${chunk.size}" }
+        return byteArrayOf(
+            0x80.toByte(),
+            0x80.toByte(),
+            chunkIdx.toByte(),
+            if (moreFlag) 0x01 else 0x00,
+            chunk.size.toByte()
+        ) + chunk + byteArrayOf(0x00)
+    }
+
+    fun authGetCardCert(chunkIdx: Int): ByteArray = byteArrayOf(
+        0x80.toByte(),
+        0x82.toByte(),
+        chunkIdx.toByte(),
+        0x00,
+        0x00
+    )
+
+    fun authGetN1(chunkIdx: Int): ByteArray = byteArrayOf(
+        0x80.toByte(),
+        0x83.toByte(),
+        chunkIdx.toByte(),
+        0x00,
+        0x00
+    )
+
+    fun authSendMutualNonce(chunkIdx: Int, moreFlag: Boolean, chunk: ByteArray): ByteArray {
+        require(chunk.size in 1..180) { "Chunk size must be 1 to 180, was ${chunk.size}" }
+        return byteArrayOf(
+            0x80.toByte(),
+            0x84.toByte(),
+            chunkIdx.toByte(),
+            if (moreFlag) 0x01 else 0x00,
+            chunk.size.toByte()
+        ) + chunk + byteArrayOf(0x00)
+    }
+
+    fun authGetNonceAck(chunkIdx: Int): ByteArray = byteArrayOf(
+        0x80.toByte(),
+        0x86.toByte(),
+        chunkIdx.toByte(),
+        0x00,
+        0x00
+    )
+
+    fun authEstablishHtk(chunkIdx: Int, moreFlag: Boolean, chunk: ByteArray): ByteArray {
+        require(chunk.size in 1..180) { "Chunk size must be 1 to 180, was ${chunk.size}" }
+        return byteArrayOf(
+            0x80.toByte(),
+            0x88.toByte(),
+            chunkIdx.toByte(),
+            if (moreFlag) 0x01 else 0x00,
+            chunk.size.toByte()
+        ) + chunk + byteArrayOf(0x00)
+    }
+
+    fun secureApdu(envelope: ByteArray): ByteArray {
+        require(envelope.size in 1..255) { "Envelope size must be 1 to 255, was ${envelope.size}" }
+        return byteArrayOf(
+            0x80.toByte(),
+            0x90.toByte(),
+            0x00,
+            0x00,
+            envelope.size.toByte()
+        ) + envelope + byteArrayOf(0x00)
+    }
 
     fun addRecord(blob: ByteArray): ByteArray {
         require(blob.size in 1..180) { "Record blob size must be 1 to 180, was ${blob.size}" }
